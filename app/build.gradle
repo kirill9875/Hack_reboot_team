@@ -34,6 +34,8 @@ dependencies {
 
     /**
      * add lib qr scanner
-     * @link
+     * @link https://github.com/journeyapps/zxing-android-embedded
      */
+    implementation 'com.journeyapps:zxing-android-embedded:4.0.0'
+
 }
