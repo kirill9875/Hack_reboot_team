@@ -56,15 +56,8 @@ public class HomeFragment extends Fragment {
         integrator.setOrientationLocked(false);
         integrator.initiateScan();
 
-//        IntentIntegrator.forSupportFragment(this).initiateScan();
     }
 
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-//        IntentIntegrator.forSupportFragment(this).initiateScan();
-
-    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -78,10 +71,8 @@ public class HomeFragment extends Fragment {
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
+        System.out.println(result);
     }
-
-
-
 
 
     private class item {
