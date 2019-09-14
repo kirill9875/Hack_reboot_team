@@ -166,8 +166,11 @@
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
                 android:padding="5dp"
+                android:elevation="2dp"
+                android:background="@drawable/myrect"
                 app:cardBackgroundColor="#A3F5F5F5"
                 app:cardCornerRadius="10dp">
+
 
                 <LinearLayout
                     android:layout_width="match_parent"
