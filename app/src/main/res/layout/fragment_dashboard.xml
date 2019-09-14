@@ -53,6 +53,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/person_name"
+                        android:text="invited"
                         android:layout_toRightOf="@+id/person_photo" />
                 </RelativeLayout>
             </androidx.cardview.widget.CardView>
