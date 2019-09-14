@@ -117,7 +117,7 @@ public class HomeFragment extends Fragment {
         tName.setTypeface(typeface);
 
         params5 = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         TextView tPrice = new TextView(this.getContext());
         tPrice.setLayoutParams(params5);
         tPrice.setText(price);
