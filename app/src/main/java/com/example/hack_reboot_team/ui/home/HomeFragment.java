@@ -21,7 +21,6 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.example.hack_reboot_team.Main2Activity;
 import com.example.hack_reboot_team.R;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
@@ -75,11 +74,12 @@ public class HomeFragment extends Fragment {
         arr[1] = 1;
         addcard("Каротфель Фри", "+ $"+"137", arr, idimg);
     }
+
     private void startQR() {
         IntentIntegrator integrator = IntentIntegrator.forSupportFragment(this);
         integrator.setOrientationLocked(false);
         integrator.initiateScan();
-
+    }
 
     void addcard(String name, String price, int arr[], int idimg[]){
         CardView c = new CardView(this.getContext());
@@ -172,8 +172,7 @@ public class HomeFragment extends Fragment {
         l.addView(c);
     }
 
-//        IntentIntegrator.forSupportFragment(this).initiateScan();
-    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
