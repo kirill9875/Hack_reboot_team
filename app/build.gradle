@@ -37,5 +37,6 @@ dependencies {
      * @link https://github.com/journeyapps/zxing-android-embedded
      */
     implementation 'com.journeyapps:zxing-android-embedded:4.0.0'
+    implementation 'com.google.zxing:core:3.3.2'
 
 }
