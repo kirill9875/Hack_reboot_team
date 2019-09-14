@@ -382,7 +382,6 @@
                 android:layout_width="160dp"
                 android:layout_height="50dp"
                 android:layout_alignParentLeft="true"
-                android:layout_gravity="center"
                 android:background="@drawable/corner_radius"
                 android:baselineAligned="false"
                 android:shadowColor="#A8A8A8"
