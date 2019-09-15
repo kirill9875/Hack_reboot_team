@@ -2,6 +2,7 @@ package com.example.hack_reboot_team.ui.home;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,15 +13,27 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.example.hack_reboot_team.Main2Activity;
 import com.example.hack_reboot_team.R;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
+
+import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
+import static androidx.constraintlayout.widget.Constraints.TAG;
 
 public class HomeFragment extends Fragment {
 
     private HomeViewModel homeViewModel;
     private Button plus_btn;
+    OkHttpClient client = new OkHttpClient();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -56,8 +69,38 @@ public class HomeFragment extends Fragment {
         integrator.setOrientationLocked(false);
         integrator.initiateScan();
 
+        
+
+        post("http://httpbin.org/get", "", new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                // Something went wrong
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseStr = response.body().string();
+                    System.out.println(responseStr);
+                    // Do what you want to do with the response.
+                } else {
+                    // Request not successful
+                }
+            }
+        });
+
     }
 
+
+    public Call post(String url, String json, Callback callback) {
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+        Call call = client.newCall(request);
+        call.enqueue(callback);
+        return call;
+    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -71,8 +114,9 @@ public class HomeFragment extends Fragment {
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
-        System.out.println(result);
     }
+
+
 
 
     private class item {
