@@ -1,18 +1,23 @@
 package com.example.hack_reboot_team.ui.home;
 
+import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextPaint;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -21,6 +26,7 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.example.hack_reboot_team.DBhelper;
 import com.example.hack_reboot_team.R;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
@@ -29,15 +35,25 @@ public class HomeFragment extends Fragment {
 
     private HomeViewModel homeViewModel;
     LinearLayout l;
+    TextView tv;
     private Button plus_btn;
+    private Button add_btn;
+    int num_product = 0;
+    int Total_price = 0;
+
+
+    DBhelper dbHelper;
+    SQLiteDatabase DB;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+        System.out.println(R.mipmap.ben);
         homeViewModel =
                 ViewModelProviders.of(this).get(HomeViewModel.class);
         View root = inflater.inflate(R.layout.fragment_home, container, false);
 
         plus_btn = (Button) root.findViewById(R.id.angry_btn3);
+        add_btn = (Button) root.findViewById(R.id.angry_btn);
 
         plus_btn.setOnClickListener(new View.OnClickListener()
         {
@@ -45,34 +61,172 @@ public class HomeFragment extends Fragment {
             public void onClick(View v)
             {
                 startQR();
+            }
+        });
 
+        add_btn.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                add_product();
             }
         });
 
 
-        String user[] = {"Петя","Вася"};
-        item w1 = new item("Potato", 32,2, user);
-        item w2 = new item("Taxi", 86,1, user);
-
-        item arr[] = {w1,w2};
-
         return root;
+    }
+
+    private void add_product() {
+        if(num_product == 0){
+            l = (LinearLayout)getView().findViewById(R.id.linerforcards);
+            l.removeAllViews();
+        }
+
+        final CardView c = new CardView(this.getContext());
+
+        LinearLayout.LayoutParams params3 = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        params3.setMargins(15,15,15,15);
+
+        c.setLayoutParams(params3);
+        c.setRadius(40);
+        c.setContentPadding(50, 25, 50, 25);
+
+        c.setCardBackgroundColor(Color.parseColor("#ffffff"));
+        c.setMaxCardElevation(5);
+
+        LinearLayout l1 = new LinearLayout(this.getContext());
+        l1.setLayoutParams(params3);
+        l1.setOrientation(LinearLayout.VERTICAL);
+
+        Typeface typeface = ResourcesCompat.getFont(this.getContext(), R.font.roboto_bold);
+        params3.setMargins(0,0,0,0);
+        final EditText etName = new EditText(this.getContext());
+        etName.setLayoutParams(params3);
+        etName.setPadding(15,15,15,15);
+        etName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+        etName.setTypeface(typeface);
+
+        TextView tName = new TextView(this.getContext());
+        tName.setLayoutParams(params3);
+        tName.setText("Наименование");
+        tName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+        tName.setTextColor(Color.parseColor("#333333"));
+        tName.setTypeface(typeface);
+        tName.setGravity(Gravity.LEFT);
+
+        params3 = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout l2 = new LinearLayout(this.getContext());
+        l2.setLayoutParams(params3);
+        l2.setOrientation(LinearLayout.HORIZONTAL);
+
+        params3 = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        LinearLayout l3 = new LinearLayout(this.getContext());
+        l3.setLayoutParams(params3);
+        l3.setOrientation(LinearLayout.VERTICAL);
+
+        final EditText etCount = new EditText(this.getContext());
+        etCount.setLayoutParams(params3);
+        etCount.setPadding(15,15,15,15);
+        etCount.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+        etCount.setTypeface(typeface);
+
+        TextView tCount = new TextView(this.getContext());
+        tCount.setLayoutParams(params3);
+        tCount.setText("Колчествово");
+        tCount.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+        tCount.setTextColor(Color.parseColor("#333333"));
+        tCount.setTypeface(typeface);
+        tCount.setGravity(Gravity.LEFT);
+
+        LinearLayout l4 = new LinearLayout(this.getContext());
+        l4.setLayoutParams(params3);
+        l4.setOrientation(LinearLayout.VERTICAL);
+
+        final EditText etPrice = new EditText(this.getContext());
+        etPrice.setLayoutParams(params3);
+        etPrice.setPadding(15,15,15,15);
+        etPrice.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+        etPrice.setTypeface(typeface);
+
+        TextView tPrice = new TextView(this.getContext());
+        tPrice.setLayoutParams(params3);
+        tPrice.setText("Цена                   ");
+        tPrice.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+        tPrice.setTextColor(Color.parseColor("#333333"));
+        tPrice.setTypeface(typeface);
+        tPrice.setGravity(Gravity.LEFT);
+
+        LinearLayout l5 = new LinearLayout(this.getContext());
+        l5.setLayoutParams(params3);
+        l5.setOrientation(LinearLayout.VERTICAL);
+        l5.setGravity(Gravity.RIGHT);
+
+        Button b = new Button(this.getContext());
+        b.setLayoutParams(params3);
+        b.setText("Add");
+        b.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                int arr[] = {0,0,0,0};
+                int idimg[] = {R.mipmap.ben, R.mipmap.den, R.mipmap.git, R.mipmap.pig};
+
+                LinearLayout parent = (LinearLayout) c.getParent();
+                parent.removeViewAt(parent.getChildCount()-1);
+                addcard(etName.getText().toString(),"+ $" + etPrice.getText().toString(),arr,idimg);
+                num_product++;
+                setTotalPrice(Total_price + Integer.parseInt(etPrice.getText().toString()));
+                Total_price += Integer.parseInt(etPrice.getText().toString());
+            }
+        });
+
+        l = (LinearLayout)getView().findViewById(R.id.linerforcards);
+
+
+        l5.addView(b);
+        l4.addView(etPrice);
+        l4.addView(tPrice);
+        l3.addView(etCount);
+        l3.addView(tCount);
+        l2.addView(l3);
+        l2.addView(l4);
+        l2.addView(l5);
+        l1.addView(etName);
+        l1.addView(tName);
+        l1.addView(l2);
+        c.addView(l1);
+        l.addView(c);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        int idimg[] = {R.mipmap.ben, R.mipmap.den, R.mipmap.git, R.mipmap.pig};
-        int arr[] = {0,0,1,1};
-        addcard("Бигмак", "+ $"+"137", arr, idimg);
-        arr[0] = 1;
-        addcard("Чизбергер", "+ $"+"137", arr, idimg);
-        arr[3] = 0;
-        addcard("Чикенбургер", "+ $"+"137", arr, idimg);
-        arr[2] = 0;
-        addcard("Цезарь Ролл", "+ $"+"137", arr, idimg);
-        arr[1] = 1;
-        addcard("Каротфель Фри", "+ $"+"137", arr, idimg);
+
+        ConnectDB();
+
+        Cursor cursor = DB.query(DBhelper.TABLE_NAME_PRODUCT, null, null, null, null, null, null);
+
+        if (cursor.moveToFirst()) {
+            int idimg[] = {R.mipmap.ben, R.mipmap.den, R.mipmap.git, R.mipmap.pig};
+            int arr[] = {0,0,1,1};
+            do {
+                addcard(cursor.getString(cursor.getColumnIndex("name")), "+ $"+cursor.getString(cursor.getColumnIndex("price")), arr, idimg);
+                num_product++;
+                Total_price+=Integer.parseInt(cursor.getString(cursor.getColumnIndex("price")));
+                setTotalPrice(Total_price);
+            }while (cursor.moveToNext());
+
+        } else {
+            addnullcard();
+            setTotalPrice(0);
+            num_product = 0;
+            Total_price = 0;
+        }
     }
 
     private void startQR() {
@@ -80,6 +234,54 @@ public class HomeFragment extends Fragment {
         integrator.setOrientationLocked(false);
         integrator.initiateScan();
     }
+
+    private void setTotalPrice(int count) {
+        tv = (TextView) getView().findViewById(R.id.textTotalPriceCount);
+        tv.setText("$"+Integer.toString(count));
+    }
+
+    private void ConnectDB() {
+        dbHelper = new DBhelper(this.getContext());
+        DB = dbHelper.getWritableDatabase();
+    }
+
+    void addnullcard(){
+        CardView c = new CardView(this.getContext());
+
+        LinearLayout.LayoutParams params3 = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        params3.setMargins(15,15,15,15);
+
+        c.setLayoutParams(params3);
+        c.setRadius(40);
+        c.setContentPadding(50, 25, 50, 25);
+
+        c.setCardBackgroundColor(Color.parseColor("#ffffff"));
+        c.setMaxCardElevation(5);
+
+
+
+        LinearLayout.LayoutParams params5 = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        params5.setMargins(0,0,0,15);
+        TextView tName = new TextView(this.getContext());
+        tName.setLayoutParams(params5);
+        tName.setText("Товаров пока нет, но вы можете их добавить :)");
+        tName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+        tName.setTextColor(Color.parseColor("#333333"));
+        Typeface typeface = ResourcesCompat.getFont(this.getContext(), R.font.roboto_bold);
+        tName.setTypeface(typeface);
+        tName.setGravity(Gravity.CENTER);
+
+
+
+        l = (LinearLayout)getView().findViewById(R.id.linerforcards);
+
+
+        c.addView(tName);
+        l.addView(c);
+    }
+
 
     void addcard(String name, String price, int arr[], int idimg[]){
         CardView c = new CardView(this.getContext());
@@ -172,7 +374,6 @@ public class HomeFragment extends Fragment {
         l.addView(c);
     }
 
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
@@ -181,27 +382,11 @@ public class HomeFragment extends Fragment {
                 Toast.makeText(getActivity(), "Cancelled", Toast.LENGTH_LONG).show();
             } else {
                 Toast.makeText(getActivity(), "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
+                Log.d("lol", "Scanned: " + result.getContents());
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
 
-
-
-
-
-    private class item {
-        public String name;
-        public float price;
-        public int count;
-        public String[] users;
-
-        item(String name, float price, int count, String[] users){
-            this.name = name;
-            this.price = price;
-            this.count = count;
-            this.users = users;
-        }
-    }
 }
