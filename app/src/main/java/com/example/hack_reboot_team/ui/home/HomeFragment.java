@@ -31,6 +31,25 @@ import com.example.hack_reboot_team.R;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
+import static androidx.constraintlayout.widget.Constraints.TAG;
+import static java.lang.Thread.sleep;
+
 import java.util.ArrayList;
 
 public class HomeFragment extends Fragment {
@@ -42,6 +61,10 @@ public class HomeFragment extends Fragment {
     private Button add_btn;
     int num_product = 0;
     int Total_price = 0;
+
+    public String keySession;
+//    OkHttpClient client = new OkHttpClient();
+    private final OkHttpClient client = new OkHttpClient();
 
 
     DBhelper dbHelper;
@@ -55,6 +78,23 @@ public class HomeFragment extends Fragment {
 
         plus_btn = (Button) root.findViewById(R.id.angry_btn3);
         add_btn = (Button) root.findViewById(R.id.angry_btn);
+
+
+        try {
+            run();
+            System.out.println("я тут был");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("я тут был2");
+
+        }
+
+        try {
+            createAcc();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
 
         plus_btn.setOnClickListener(new View.OnClickListener()
         {
@@ -75,8 +115,9 @@ public class HomeFragment extends Fragment {
         });
 
 
-        return root;
-    }
+        String user[] = {"Петя","Вася"};
+        item w1 = new item("Potato", 32,2, user);
+        item w2 = new item("Taxi", 86,1, user);
 
     private void add_product() {
         if(num_product == 0){
@@ -282,6 +323,80 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    private void createAcc() throws JSONException {
+
+        String val1 = "63d8fa480ed2c101ba0d76b9c793fe62e25032fd";
+        String val2 = "e81dd1224666ae0146251ca5257fd36d19df9288";
+        int sum = 1500;
+
+
+        String js = "{\"amount\": " + Integer.toString(sum) +
+                ",  \"currencyCode\": 810,  \"description\": \"test description\",  " +
+                "\"number\": \"344fcb54-c81a-4ec6-a306-fc8dbd2d6167953cd861\", " +
+                " \"payer\": \"" +
+                val1 +
+                "\",  \"recipient\": \"" +
+                val2 + "\"}";
+
+        System.out.println(js);
+
+        JSONObject json = new JSONObject(js);
+
+        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+
+
+        RequestBody body = RequestBody.create(JSON, json.toString());
+
+        try {
+            sleep(9000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        Request request = new Request.Builder()
+                .url("http://89.208.84.235:31080/api/v1/invoice")
+                .addHeader("FPSID",keySession)
+                .post(body)
+                .build();
+        System.out.println("я тут 3");
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+//                System.out.println(response.body().string());
+
+                System.out.println("я тут4");
+
+                JSONObject jsRes = null;
+                try {
+                    jsRes = new JSONObject(response.body().string());
+                    System.out.println(jsRes);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                System.out.println(jsRes.toString());
+                try {
+//                    keySession =  jsRes.getString("data");
+                    System.out.println(jsRes.getString("data"));
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                System.out.println(e);
+            }
+        });
+
+
+
+
+    }
+
     private void startQR() {
         IntentIntegrator integrator = IntentIntegrator.forSupportFragment(this);
         integrator.setOrientationLocked(false);
@@ -333,6 +448,67 @@ public class HomeFragment extends Fragment {
 
         c.addView(tName);
         l.addView(c);
+//    public Call post(String url, String json, Callback callback) {
+//
+//        Request request = new Request.Builder()
+//                .url(url)
+//                .build();
+//        Call call = client.newCall(request);
+//        call.enqueue(callback);
+//        return call;
+//    }
+
+
+
+    public void run() throws Exception {
+
+        String js = "{ \"addresses\": [\"string\"],\"deviceId\": \"string\", \"deviceType\": 1 }";
+
+        JSONObject json = new JSONObject(js);
+
+        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+
+
+        RequestBody body = RequestBody.create(JSON, json.toString());
+
+
+        Request request = new Request.Builder()
+                .url("http://89.208.84.235:31080/api/v1/session")
+                .post(body)
+                .build();
+        System.out.println("я тут был3");
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+//                System.out.println(response.body().string());
+
+                System.out.println("я тут был4");
+
+                JSONObject jsRes = null;
+                try {
+                    jsRes = new JSONObject(response.body().string());
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                System.out.println(jsRes.toString());
+                try {
+                    keySession =  jsRes.getString("data");
+                    System.out.println(jsRes.getString("data"));
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                System.out.println(e);
+            }
+        });
     }
 
 
@@ -462,4 +638,21 @@ public class HomeFragment extends Fragment {
         }
     }
 
+
+
+
+
+    private class item {
+        public String name;
+        public float price;
+        public int count;
+        public String[] users;
+
+        item(String name, float price, int count, String[] users){
+            this.name = name;
+            this.price = price;
+            this.count = count;
+            this.users = users;
+        }
+    }
 }
