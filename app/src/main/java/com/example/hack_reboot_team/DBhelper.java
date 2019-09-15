@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DBhelper extends SQLiteOpenHelper {
 
-    public static final int DB_VERSION = 1;
+    public static final int DB_VERSION = 5;
     public static final String DB_NAME = "[DBVTB]";
     public static final String TABLE_NAME_USER = "[users]";
     public static final String TABLE_NAME_PRODUCT = "[product]";
@@ -15,6 +15,7 @@ public class DBhelper extends SQLiteOpenHelper {
     public static final String NAME = "[name]";
     public static final String STATYS = "[statys]";
     public static final String IMGID = "[img_id]";
+    public static final String QRCHECK = "[qr_check]";
     public static final String PRICE = "[price]";
     public static final String ID_USER = "[id_user]";
     public static final String ID_PRODUCT = "[id_product]";
@@ -29,7 +30,8 @@ public class DBhelper extends SQLiteOpenHelper {
         String zp = "CREATE TABLE " + TABLE_NAME_USER + " (id integer NOT NULL PRIMARY KEY AUTOINCREMENT, " +
                 NAME + " text, " +
                 STATYS + " text, " +
-                IMGID + " integer)";
+                IMGID + " integer, " +
+                QRCHECK + " boolean)";
         db.execSQL(zp);
         zp = "CREATE TABLE " + TABLE_NAME_PRODUCT + " (id integer NOT NULL PRIMARY KEY AUTOINCREMENT, " +
                 NAME + " text, " +
@@ -41,7 +43,7 @@ public class DBhelper extends SQLiteOpenHelper {
 
         db.execSQL(zp);
 
-        zp = "INSERT INTO " + TABLE_NAME_USER + "("+ NAME +","+ STATYS +","+ IMGID +") VALUES ('Вася', 'creator', '2131689473')";
+        zp = "INSERT INTO " + TABLE_NAME_USER + "("+ NAME +","+ STATYS +","+ IMGID +","+ QRCHECK +") VALUES ('Вася', 'creator', '2131689473', 1)";
         db.execSQL(zp);
 
         zp = "INSERT INTO " + TABLE_NAME_PRODUCT + "("+ NAME +","+ PRICE +") VALUES ('Бургер', '500')";

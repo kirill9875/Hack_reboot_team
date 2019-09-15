@@ -12,9 +12,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -114,11 +116,12 @@ public class DashboardFragment extends Fragment {
                 contentValues.put(DBhelper.NAME,etName.getText().toString());
                 contentValues.put(DBhelper.STATYS,"invited");
                 contentValues.put(DBhelper.IMGID,idimg[i]);
+                contentValues.put(DBhelper.QRCHECK,true);
 
 
                 long id = DB.insert(DBhelper.TABLE_NAME_USER, null, contentValues);
                 System.out.print("Занесено в табл " + id + '\n');
-                addcard(etName.getText().toString(),"invited",idimg[i]);
+                addcard(etName.getText().toString(),"invited",idimg[i], true, (int)id);
             }
         });
 
@@ -144,7 +147,7 @@ public class DashboardFragment extends Fragment {
             int idimg[] = {R.mipmap.ben, R.mipmap.den, R.mipmap.git, R.mipmap.pig};
             int arr[] = {0,0,1,1};
             do {
-                addcard(cursor.getString(cursor.getColumnIndex("name")), cursor.getString(cursor.getColumnIndex("statys")), cursor.getInt(cursor.getColumnIndex("img_id")));
+                addcard(cursor.getString(cursor.getColumnIndex("name")), cursor.getString(cursor.getColumnIndex("statys")), cursor.getInt(cursor.getColumnIndex("img_id")),cursor.getInt(cursor.getColumnIndex("qr_check")) > 0,cursor.getInt(cursor.getColumnIndex("id")));
             }while (cursor.moveToNext());
 
         } else {
@@ -157,7 +160,7 @@ public class DashboardFragment extends Fragment {
         DB = dbHelper.getWritableDatabase();
     }
 
-    void addcard(String name, String type, int img){
+    void addcard(String name, String type, int img, boolean qrcheck, final int userid){
         CardView c = new CardView(this.getContext());
 
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
@@ -217,6 +220,7 @@ public class DashboardFragment extends Fragment {
         tPrice.setText(type);
 
         tPrice.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+
         tPrice.setTextColor(Color.parseColor("#8080FF"));
         tPrice.setGravity(Gravity.RIGHT);
         tPrice.setTypeface(typeface);
@@ -229,19 +233,28 @@ public class DashboardFragment extends Fragment {
         i1.setLayoutParams(params5);
         i1.setImageResource(img);
 
-        params5 = new LinearLayout.LayoutParams(
-                75, 75);
-        params5.setMargins(10,10,10,10);
-        ImageView i2 = new ImageView(this.getContext());
-        i2.setLayoutParams(params5);
-        i2.setImageResource(R.mipmap.points);
 
-
+        params2.setMargins(20, 0,0,0);
+        Switch s = new Switch(this.getContext());
+        s.setLayoutParams(params2);
+        s.setText("QR/Счет");
+        s.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+        s.setHighlightColor(Color.parseColor("#FF7EA8"));
+        s.setTextColor(Color.parseColor("#333333"));
+        s.setTypeface(typeface);
+        s.setChecked(qrcheck);
+        s.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                int b = 0;
+                if(isChecked){b = 1;}
+               DB.execSQL("UPDATE "+dbHelper.TABLE_NAME_USER+" SET "+ dbHelper.QRCHECK +" = "+ b + " WHERE id = "+userid);
+            }
+        });
 
 
         l = (LinearLayout)getView().findViewById(R.id.linerForCardProfile);
 
-        l4.addView(i2);
+        l4.addView(s);
         l3.addView(tName);
         l3.addView(tPrice);
         l2.addView(i1);
