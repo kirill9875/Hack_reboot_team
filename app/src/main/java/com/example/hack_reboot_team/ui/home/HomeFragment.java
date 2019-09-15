@@ -1,12 +1,12 @@
 package com.example.hack_reboot_team.ui.home;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.text.TextPaint;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -31,6 +31,8 @@ import com.example.hack_reboot_team.R;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import java.util.ArrayList;
+
 public class HomeFragment extends Fragment {
 
     private HomeViewModel homeViewModel;
@@ -47,7 +49,6 @@ public class HomeFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        System.out.println(R.mipmap.ben);
         homeViewModel =
                 ViewModelProviders.of(this).get(HomeViewModel.class);
         View root = inflater.inflate(R.layout.fragment_home, container, false);
@@ -173,15 +174,33 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v)
             {
-                int arr[] = {0,0,0,0};
-                int idimg[] = {R.mipmap.ben, R.mipmap.den, R.mipmap.git, R.mipmap.pig};
+                Cursor cur = DB.rawQuery("SELECT "+dbHelper.IMGID+" FROM "+dbHelper.TABLE_NAME_USER, new String[] {});
+                ArrayList<Integer> personimgid = new ArrayList<>();
+                if (cur.moveToFirst()) {
+                    do{
+                        personimgid.add(cur.getInt(cur.getColumnIndex("img_id")));
+                        System.out.println(cur.getInt(cur.getColumnIndex("img_id")));
+                    }while (cur.moveToNext());
+                }
+
+                int arrcon[] = new int[personimgid.size()];
+                for (int i = 0; i < personimgid.size(); i++){
+                    arrcon[i]=0;
+                }
 
                 LinearLayout parent = (LinearLayout) c.getParent();
                 parent.removeViewAt(parent.getChildCount()-1);
-                addcard(etName.getText().toString(),"+ $" + etPrice.getText().toString(),arr,idimg);
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(DBhelper.NAME,etName.getText().toString());
+                contentValues.put(DBhelper.PRICE,etPrice.getText().toString());
+
+
+                long id = DB.insert(DBhelper.TABLE_NAME_PRODUCT, null, contentValues);
+                System.out.print("Занесено в табл " + id + '\n');
+                addcard(etName.getText().toString(),"+ $" + etPrice.getText().toString(),arrcon,personimgid);
                 num_product++;
-                setTotalPrice(Total_price + Integer.parseInt(etPrice.getText().toString()));
                 Total_price += Integer.parseInt(etPrice.getText().toString());
+                setTotalPrice(Total_price);
             }
         });
 
@@ -213,9 +232,24 @@ public class HomeFragment extends Fragment {
 
         if (cursor.moveToFirst()) {
             int idimg[] = {R.mipmap.ben, R.mipmap.den, R.mipmap.git, R.mipmap.pig};
-            int arr[] = {0,0,1,1};
+
             do {
-                addcard(cursor.getString(cursor.getColumnIndex("name")), "+ $"+cursor.getString(cursor.getColumnIndex("price")), arr, idimg);
+                Cursor c = DB.rawQuery("SELECT "+dbHelper.IMGID+" FROM "+dbHelper.TABLE_NAME_USER, new String[] {});
+                ArrayList<Integer> personimgid = new ArrayList<>();
+                if (c.moveToFirst()) {
+                    do{
+                        personimgid.add(c.getInt(c.getColumnIndex("img_id")));
+                        System.out.println(c.getInt(c.getColumnIndex("img_id")));
+                    }while (c.moveToNext());
+                }
+
+                int arrcon[] = new int[personimgid.size()];
+                for (int i = 0; i < personimgid.size(); i++){
+                    arrcon[i]=0;
+                }
+
+
+                addcard(cursor.getString(cursor.getColumnIndex("name")), "+ $"+cursor.getString(cursor.getColumnIndex("price")), arrcon, personimgid);
                 num_product++;
                 Total_price+=Integer.parseInt(cursor.getString(cursor.getColumnIndex("price")));
                 setTotalPrice(Total_price);
@@ -283,7 +317,7 @@ public class HomeFragment extends Fragment {
     }
 
 
-    void addcard(String name, String price, int arr[], int idimg[]){
+    void addcard(String name, String price, int arr[], ArrayList<Integer> idimg){
         CardView c = new CardView(this.getContext());
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -351,10 +385,10 @@ public class HomeFragment extends Fragment {
         params5 = new LinearLayout.LayoutParams(
                 150, 150);
         params5.setMargins(10,10,10,10);
-        for(int i = 0; i < idimg.length; i++){
+        for(int i = 0; i < idimg.size(); i++){
             ImageView i1 = new ImageView(this.getContext());
             i1.setLayoutParams(params5);
-            i1.setImageResource(idimg[i]);
+            i1.setImageResource(idimg.get(i));
             if(!(arr[i] == 1)) {
                 i1.setAlpha(100);
             }
