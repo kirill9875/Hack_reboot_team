@@ -52,6 +52,8 @@ public class HomeFragment extends Fragment {
 
         plus_btn = (Button) root.findViewById(R.id.angry_btn3);
 
+        createAcc();
+
         plus_btn.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -78,6 +80,26 @@ public class HomeFragment extends Fragment {
 
 
         return root;
+    }
+
+    private void createAcc() {
+
+        String val1 = "63d8fa480ed2c101ba0d76b9c793fe62e25032fd";
+        String val2 = "e81dd1224666ae0146251ca5257fd36d19df9288";
+        int sum = 1500;
+
+
+        String json = "{\"amount\": " + Integer.toString(sum) +
+                ",  \"currencyCode\": 810,  \"description\": \"test description\",  " +
+                "\"number\": \"344fcb54-c81a-4ec6-a306-fc8dbd2d6167953cd861\", " +
+                " \"payer\": \"" +
+                val1 +
+                "\",  \"recipient\": \"" +
+                val2 + "\"}";
+
+
+        System.out.println(json);
+
     }
 
     private void startQR() {
@@ -172,7 +194,6 @@ public class HomeFragment extends Fragment {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
 
             }
 
