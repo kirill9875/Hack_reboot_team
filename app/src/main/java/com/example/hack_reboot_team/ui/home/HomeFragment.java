@@ -17,11 +17,14 @@ import com.example.hack_reboot_team.R;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -33,7 +36,8 @@ public class HomeFragment extends Fragment {
 
     private HomeViewModel homeViewModel;
     private Button plus_btn;
-    OkHttpClient client = new OkHttpClient();
+//    OkHttpClient client = new OkHttpClient();
+    private final OkHttpClient client = new OkHttpClient();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -53,7 +57,14 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        try {
+            run();
+            System.out.println("я тут был");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("я тут был2");
 
+        }
         String user[] = {"Петя","Вася"};
         item w1 = new item("Potato", 32,2, user);
         item w2 = new item("Taxi", 86,1, user);
@@ -69,37 +80,70 @@ public class HomeFragment extends Fragment {
         integrator.setOrientationLocked(false);
         integrator.initiateScan();
 
-        
 
-        post("http://httpbin.org/get", "", new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                // Something went wrong
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    String responseStr = response.body().string();
-                    System.out.println(responseStr);
-                    // Do what you want to do with the response.
-                } else {
-                    // Request not successful
-                }
-            }
-        });
+//
+//        post("http://httpbin.org/get", "", new Callback() {
+//            @Override
+//            public void onFailure(Call call, IOException e) {
+//                // Something went wrong
+//            }
+//
+//            @Override
+//            public void onResponse(Call call, Response response) throws IOException {
+//                if (response.isSuccessful()) {
+//                    String responseStr = response.body().string();
+//                    System.out.println(responseStr);
+//                    // Do what you want to do with the response.
+//                } else {
+//                    // Request not successful
+//                }
+//            }
+//        });
 
     }
 
 
-    public Call post(String url, String json, Callback callback) {
+//    public Call post(String url, String json, Callback callback) {
+//
+//        Request request = new Request.Builder()
+//                .url(url)
+//                .build();
+//        Call call = client.newCall(request);
+//        call.enqueue(callback);
+//        return call;
+//    }
+
+
+
+    public void run() throws Exception {
+
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("somParam", "someValue")
+                .build();
+
 
         Request request = new Request.Builder()
-                .url(url)
+                .url("http://89.208.84.235:31080/api/v1/session")
+                .post(requestBody)
                 .build();
-        Call call = client.newCall(request);
-        call.enqueue(callback);
-        return call;
+        System.out.println("я тут был3");
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+                System.out.println(response.body().string());
+                System.out.println("я тут был4");
+
+
+            }
+
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                System.out.println(e);
+            }
+        });
     }
 
     @Override
