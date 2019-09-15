@@ -639,4 +639,8 @@ public class HomeFragment extends Fragment {
             this.users = users;
         }
     }
+
+    public String getKeySession() {
+        return keySession;
+    }
 }
