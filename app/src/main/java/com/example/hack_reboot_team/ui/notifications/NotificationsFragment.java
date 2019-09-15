@@ -36,6 +36,8 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import static java.lang.Thread.sleep;
+
 public class NotificationsFragment extends Fragment {
 
     private NotificationsViewModel notificationsViewModel;
@@ -105,23 +107,19 @@ public class NotificationsFragment extends Fragment {
 
 
 
-    private String createAcc() throws JSONException {
+    private void createAcc() throws JSONException {
 
-        HomeFragment hhh = new HomeFragment();
-        String s =  hhh.getKeySession();
+        HomeFragment sect = new HomeFragment();
+        String sss = sect.getKeySession();
 
         String val1 = "63d8fa480ed2c101ba0d76b9c793fe62e25032fd";
         String val2 = "e81dd1224666ae0146251ca5257fd36d19df9288";
         int sum = 1500;
 
-        String uniqueID = UUID.randomUUID().toString();
-
 
         String js = "{\"amount\": " + Integer.toString(sum) +
                 ",  \"currencyCode\": 810,  \"description\": \"test description\",  " +
-                "\"number\": \"" +
-                uniqueID +
-                "\", " +
+                "\"number\": \"344fcb54-c81a-4ec6-a306-fc8dbd2d6167953cd861\", " +
                 " \"payer\": \"" +
                 val1 +
                 "\",  \"recipient\": \"" +
@@ -136,9 +134,14 @@ public class NotificationsFragment extends Fragment {
 
         RequestBody body = RequestBody.create(JSON, json.toString());
 
+        try {
+            sleep(9000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         Request request = new Request.Builder()
                 .url("http://89.208.84.235:31080/api/v1/invoice")
-                .addHeader("FPSID",s)
+                .addHeader("FPSID",sss)
                 .post(body)
                 .build();
         System.out.println("я тут 3");
@@ -177,7 +180,7 @@ public class NotificationsFragment extends Fragment {
         });
 
 
-        return uniqueID;
+
 
     }
 
@@ -185,13 +188,12 @@ public class NotificationsFragment extends Fragment {
 
 
 
-
-
-
     private void generateQR() {
+        String in;
         try {
-            createAcc();
+            in = createAcc();
         } catch (JSONException e) {
+            in = "42615e75-6cde-41dc-a2fe-24e99d92c1c3";
             e.printStackTrace();
         }
 
@@ -199,17 +201,16 @@ public class NotificationsFragment extends Fragment {
 
         String otherAcc =
                 "537c8cf34d8c59d2c1341c1dd90f3a991c69c5fb";
-                //"iluhach008";
 
         String iluha = "63d8fa480ed2c101ba0d76b9c793fe62e25032fd";
         String kik = "e81dd1224666ae0146251ca5257fd36d19df9288";
         String invoice = "42615e75-6cde-41dc-a2fe-24e99d92c1c3";
 
         String cntx = "{\"invoiceId\":\"" +
-                invoice +
+                in +
                 "\",\"amount\":58," +
                 "\"address\":\"" +
-                otherAcc +
+                iluha +
                 "\",\"currencyCode\":810}";
 
         System.out.println(cntx);
