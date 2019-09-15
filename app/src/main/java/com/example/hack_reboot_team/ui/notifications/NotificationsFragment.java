@@ -88,7 +88,6 @@ public class NotificationsFragment extends Fragment {
                     System.out.println(responseStr);
                     // Do what you want to do with the response.
                 } else {
-                    Toast.makeText(getActivity(), "Cancelled", Toast.LENGTH_LONG).show();
                     // Request not successful
                 }
             }

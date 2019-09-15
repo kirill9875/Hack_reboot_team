@@ -90,35 +90,28 @@ public class HomeFragment extends Fragment {
         }
 
         try {
-            createAcc();
+
+            ();
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
 
-        plus_btn.setOnClickListener(new View.OnClickListener()
-        {
+        plus_btn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 startQR();
             }
         });
 
-        add_btn.setOnClickListener(new View.OnClickListener()
-        {
+        add_btn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 add_product();
             }
         });
-
-
-        String user[] = {"Петя","Вася"};
-        item w1 = new item("Potato", 32,2, user);
-        item w2 = new item("Taxi", 86,1, user);
-
+        return root;
+    }
     private void add_product() {
         if(num_product == 0){
             l = (LinearLayout)getView().findViewById(R.id.linerforcards);
@@ -413,12 +406,12 @@ public class HomeFragment extends Fragment {
         DB = dbHelper.getWritableDatabase();
     }
 
-    void addnullcard(){
+    void addnullcard() {
         CardView c = new CardView(this.getContext());
 
         LinearLayout.LayoutParams params3 = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        params3.setMargins(15,15,15,15);
+        params3.setMargins(15, 15, 15, 15);
 
         c.setLayoutParams(params3);
         c.setRadius(40);
@@ -428,10 +421,9 @@ public class HomeFragment extends Fragment {
         c.setMaxCardElevation(5);
 
 
-
         LinearLayout.LayoutParams params5 = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        params5.setMargins(0,0,0,15);
+        params5.setMargins(0, 0, 0, 15);
         TextView tName = new TextView(this.getContext());
         tName.setLayoutParams(params5);
         tName.setText("Товаров пока нет, но вы можете их добавить :)");
@@ -442,8 +434,7 @@ public class HomeFragment extends Fragment {
         tName.setGravity(Gravity.CENTER);
 
 
-
-        l = (LinearLayout)getView().findViewById(R.id.linerforcards);
+        l = (LinearLayout) getView().findViewById(R.id.linerforcards);
 
 
         c.addView(tName);
@@ -458,7 +449,7 @@ public class HomeFragment extends Fragment {
 //        return call;
 //    }
 
-
+    }
 
     public void run() throws Exception {
 
