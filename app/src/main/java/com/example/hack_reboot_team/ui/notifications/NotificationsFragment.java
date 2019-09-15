@@ -48,8 +48,10 @@ public class NotificationsFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_notifications, container, false);
 
         imageViewQrCode = (ImageView) root.findViewById(R.id.qrCode);
+        generateQR();
 
         reqCode();
+
 
         return root;
     }
@@ -92,7 +94,6 @@ public class NotificationsFragment extends Fragment {
                 }
             }
         });
-        generateQR();
 
     }
 
@@ -100,7 +101,8 @@ public class NotificationsFragment extends Fragment {
 
         try {
             BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
-            Bitmap bitmap = barcodeEncoder.encodeBitmap("content", BarcodeFormat.QR_CODE, 400, 400);
+            Bitmap bitmap = barcodeEncoder.encodeBitmap("{\"invoiceId\":\"42615e75-6cde-41dc-a2fe-24e99d92c1c3\",\"amount\":58," +
+                    "\"address\":\"537c8cf34d8c59d2c1341c1dd90f3a991c69c5fb\",\"currencyCode\":810}", BarcodeFormat.QR_CODE, 400, 400);
             imageViewQrCode.setImageBitmap(bitmap);
         } catch(Exception e) {
         }

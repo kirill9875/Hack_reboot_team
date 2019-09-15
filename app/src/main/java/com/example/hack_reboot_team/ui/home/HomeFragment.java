@@ -89,13 +89,6 @@ public class HomeFragment extends Fragment {
 
         }
 
-        try {
-
-            ();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
 
         plus_btn.setOnClickListener(new View.OnClickListener() {
             @Override
