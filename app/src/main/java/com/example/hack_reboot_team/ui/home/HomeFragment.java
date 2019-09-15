@@ -309,79 +309,7 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    private void createAcc() throws JSONException {
 
-        String val1 = "63d8fa480ed2c101ba0d76b9c793fe62e25032fd";
-        String val2 = "e81dd1224666ae0146251ca5257fd36d19df9288";
-        int sum = 1500;
-
-
-        String js = "{\"amount\": " + Integer.toString(sum) +
-                ",  \"currencyCode\": 810,  \"description\": \"test description\",  " +
-                "\"number\": \"344fcb54-c81a-4ec6-a306-fc8dbd2d6167953cd861\", " +
-                " \"payer\": \"" +
-                val1 +
-                "\",  \"recipient\": \"" +
-                val2 + "\"}";
-
-        System.out.println(js);
-
-        JSONObject json = new JSONObject(js);
-
-        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-
-
-        RequestBody body = RequestBody.create(JSON, json.toString());
-
-        try {
-            sleep(9000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        Request request = new Request.Builder()
-                .url("http://89.208.84.235:31080/api/v1/invoice")
-                .addHeader("FPSID",keySession)
-                .post(body)
-                .build();
-        System.out.println("я тут 3");
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-//                System.out.println(response.body().string());
-
-                System.out.println("я тут4");
-
-                JSONObject jsRes = null;
-                try {
-                    jsRes = new JSONObject(response.body().string());
-                    System.out.println(jsRes);
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                System.out.println(jsRes.toString());
-                try {
-//                    keySession =  jsRes.getString("data");
-                    System.out.println(jsRes.getString("data"));
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-            }
-
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                System.out.println(e);
-            }
-        });
-
-
-
-
-    }
 
     private void startQR() {
         IntentIntegrator integrator = IntentIntegrator.forSupportFragment(this);
@@ -493,6 +421,7 @@ public class HomeFragment extends Fragment {
                 System.out.println(e);
             }
         });
+
     }
 
 
@@ -638,5 +567,9 @@ public class HomeFragment extends Fragment {
             this.count = count;
             this.users = users;
         }
+    }
+
+    public String getKeySession() {
+        return keySession;
     }
 }
