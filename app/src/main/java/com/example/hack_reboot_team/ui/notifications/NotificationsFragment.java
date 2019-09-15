@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -59,18 +60,19 @@ public class NotificationsFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_notifications, container, false);
 
         imageViewQrCode = (ImageView) root.findViewById(R.id.qrCode);
-        try {
-            createAcc(true);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
-        horscroll = (HorizontalScrollView)root.findViewById(R.id.imagescrol);
-
-        generateQR();
-
-        reqCode();
+        Button plus_btn = (Button)root.findViewById(R.id.buttonsend);
         mockGenerateQR();
+        plus_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    createAcc(true);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
 
         return root;
@@ -181,9 +183,7 @@ public class NotificationsFragment extends Fragment {
                 try {
                     jsRes = new JSONObject(response.body().string());
                     System.out.println(jsRes);
-                    if(qr){
-                        generateQR(uniqueID);
-                    }
+
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -236,7 +236,11 @@ public class NotificationsFragment extends Fragment {
         try {
             BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
             Bitmap bitmap = barcodeEncoder.encodeBitmap(cntx, BarcodeFormat.QR_CODE, 400, 400);
+            imageViewQrCode = new ImageView(this.getContext());
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
             imageViewQrCode.setImageBitmap(bitmap);
+            horscroll.addView(imageViewQrCode);
         } catch(Exception e) {
         }
 
@@ -255,31 +259,25 @@ public class NotificationsFragment extends Fragment {
         String invoice = "42615e75-6cde-41dc-a2fe-24e99d92c1c3";
 
 
-        String cntx = "{\"invoiceId\":\"" +
-                invoice +
-                "\",\"amount\":1500," +
-                "\"address\":\"" +
-                otherAcc +
-                "\",\"currencyCode\":810}";
+//        String cntx = "{\"invoiceId\":\"" +
+//                invoice +
+//                "\",\"amount\":1500," +
+//                "\"address\":\"" +
+//                otherAcc +
+//                "\",\"currencyCode\":810}";
+
+        String cntx = "{\"invoiceId\":\"42615e75-6cde-41dc-a2fe-24e99d92c1c3\",\"amount\":58,\"address\":\"537c8cf34d8c59d2c1341c1dd90f3a991c69c5fb\",\"currencyCode\":810}\n";
 
         System.out.println(cntx);
 
         try {
             BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
-            Bitmap bitmap = barcodeEncoder.encodeBitmap("{\"invoiceId\":\"42615e75-6cde-41dc-a2fe-24e99d92c1c3\",\"amount\":58," +
-                    "\"address\":\"537c8cf34d8c59d2c1341c1dd90f3a991c69c5fb\",\"currencyCode\":810}", BarcodeFormat.QR_CODE, 400, 400);
-            ImageView imageViewQrCode = new ImageView(this.getContext());
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-            imageViewQrCode.setLayoutParams(params);
             Bitmap bitmap = barcodeEncoder.encodeBitmap(cntx, BarcodeFormat.QR_CODE, 400, 400);
             imageViewQrCode.setImageBitmap(bitmap);
-            horscroll.addView(imageViewQrCode);
         } catch(Exception e) {
         }
 
     }
-
 
 
 
