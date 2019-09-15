@@ -31,4 +31,14 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+
+    /**
+     * add lib qr scanner
+     * @link https://github.com/journeyapps/zxing-android-embedded
+     */
+    implementation 'com.journeyapps:zxing-android-embedded:4.0.0'
+    implementation 'com.google.zxing:core:3.3.2'
+
+    implementation("com.squareup.okhttp3:okhttp:4.2.0")
+
 }
