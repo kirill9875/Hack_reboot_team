@@ -38,7 +38,7 @@ public class DBhelper extends SQLiteOpenHelper {
                 PRICE + " text)";
         db.execSQL(zp);
         zp = "CREATE TABLE " + TABLE_NAME_CON + " (id integer NOT NULL PRIMARY KEY AUTOINCREMENT, " +
-                ID_USER + " integer, " +
+                ID_USER + " text, " +
                 ID_PRODUCT + " integer)";
 
         db.execSQL(zp);

@@ -7,18 +7,20 @@
 
     <ImageView
         android:id="@+id/qrCode"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="375dp"
+        android:layout_height="367dp"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="32dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        android:layout_marginBottom="200dp"
+        android:layout_marginBottom="100dp"
+        android:paddingTop="50dp"
         app:layout_constraintBottom_toTopOf="@+id/buttonsend"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
 
     <Button
         android:id="@+id/buttonsend"
@@ -28,6 +30,7 @@
         android:layout_marginLeft="100dp"
         android:layout_marginEnd="100dp"
         android:layout_marginRight="100dp"
+        android:layout_marginBottom="60dp"
         android:background="@drawable/qr_btn_design"
         android:gravity="center|center_horizontal"
         android:text="Send"
@@ -35,5 +38,6 @@
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
