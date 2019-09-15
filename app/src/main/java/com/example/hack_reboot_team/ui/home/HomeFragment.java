@@ -34,6 +34,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 import static androidx.constraintlayout.widget.Constraints.TAG;
+import static java.lang.Thread.sleep;
 
 public class HomeFragment extends Fragment {
 
@@ -52,7 +53,22 @@ public class HomeFragment extends Fragment {
 
         plus_btn = (Button) root.findViewById(R.id.angry_btn3);
 
-        createAcc();
+
+        try {
+            run();
+            System.out.println("я тут был");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("я тут был2");
+
+        }
+
+        try {
+            createAcc();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
 
         plus_btn.setOnClickListener(new View.OnClickListener()
         {
@@ -64,14 +80,6 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        try {
-            run();
-            System.out.println("я тут был");
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("я тут был2");
-
-        }
         String user[] = {"Петя","Вася"};
         item w1 = new item("Potato", 32,2, user);
         item w2 = new item("Taxi", 86,1, user);
@@ -82,14 +90,14 @@ public class HomeFragment extends Fragment {
         return root;
     }
 
-    private void createAcc() {
+    private void createAcc() throws JSONException {
 
         String val1 = "63d8fa480ed2c101ba0d76b9c793fe62e25032fd";
         String val2 = "e81dd1224666ae0146251ca5257fd36d19df9288";
         int sum = 1500;
 
 
-        String json = "{\"amount\": " + Integer.toString(sum) +
+        String js = "{\"amount\": " + Integer.toString(sum) +
                 ",  \"currencyCode\": 810,  \"description\": \"test description\",  " +
                 "\"number\": \"344fcb54-c81a-4ec6-a306-fc8dbd2d6167953cd861\", " +
                 " \"payer\": \"" +
@@ -97,8 +105,62 @@ public class HomeFragment extends Fragment {
                 "\",  \"recipient\": \"" +
                 val2 + "\"}";
 
+        System.out.println(js);
 
-        System.out.println(json);
+        JSONObject json = new JSONObject(js);
+
+        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+
+
+        RequestBody body = RequestBody.create(JSON, json.toString());
+
+        try {
+            sleep(9000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        Request request = new Request.Builder()
+                .url("http://89.208.84.235:31080/api/v1/invoice")
+                .addHeader("FPSID",keySession)
+                .post(body)
+                .build();
+        System.out.println("я тут 3");
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+//                System.out.println(response.body().string());
+
+                System.out.println("я тут4");
+
+                JSONObject jsRes = null;
+                try {
+                    jsRes = new JSONObject(response.body().string());
+                    System.out.println(jsRes);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                System.out.println(jsRes.toString());
+                try {
+//                    keySession =  jsRes.getString("data");
+                    System.out.println(jsRes.getString("data"));
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                System.out.println(e);
+            }
+        });
+
+
+
 
     }
 
@@ -147,20 +209,9 @@ public class HomeFragment extends Fragment {
         String js = "{ \"addresses\": [\"string\"],\"deviceId\": \"string\", \"deviceType\": 1 }";
 
         JSONObject json = new JSONObject(js);
-//        json.put("addresses","[]");
-//        json.put("deviceId","test_device_id");
-//        json.put("deviceType",1);
 
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
-
-
-//        RquestBody requestBody = new MultipartBody.Builder()
-//                .setType(MultipartBody.FORM)
-//                .addFormDataPart("addresses", "[]")
-//                .addFormDataPart("deviceId","test_device_id")
-//                .addFormDataPart("deviceType", String.valueOf(1))
-//                .build();
 
         RequestBody body = RequestBody.create(JSON, json.toString());
 
