@@ -174,12 +174,13 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v)
             {
-                Cursor cur = DB.rawQuery("SELECT "+dbHelper.IMGID+" FROM "+dbHelper.TABLE_NAME_USER, new String[] {});
+                Cursor cur = DB.rawQuery("SELECT "+dbHelper.IMGID+",id FROM "+dbHelper.TABLE_NAME_USER, new String[] {});
                 ArrayList<Integer> personimgid = new ArrayList<>();
+                ArrayList<Integer> usersid = new ArrayList<>();
                 if (cur.moveToFirst()) {
                     do{
                         personimgid.add(cur.getInt(cur.getColumnIndex("img_id")));
-                        System.out.println(cur.getInt(cur.getColumnIndex("img_id")));
+                        usersid.add(cur.getInt(cur.getColumnIndex("id")));
                     }while (cur.moveToNext());
                 }
 
@@ -197,7 +198,7 @@ public class HomeFragment extends Fragment {
 
                 long id = DB.insert(DBhelper.TABLE_NAME_PRODUCT, null, contentValues);
                 System.out.print("Занесено в табл " + id + '\n');
-                addcard(etName.getText().toString(),"+ $" + etPrice.getText().toString(),arrcon,personimgid);
+                addcard(etName.getText().toString(),"+ $" + etPrice.getText().toString(),arrcon,personimgid,usersid,(int)id);
                 num_product++;
                 Total_price += Integer.parseInt(etPrice.getText().toString());
                 setTotalPrice(Total_price);
@@ -234,22 +235,40 @@ public class HomeFragment extends Fragment {
             int idimg[] = {R.mipmap.ben, R.mipmap.den, R.mipmap.git, R.mipmap.pig};
 
             do {
-                Cursor c = DB.rawQuery("SELECT "+dbHelper.IMGID+" FROM "+dbHelper.TABLE_NAME_USER, new String[] {});
+                Cursor c = DB.rawQuery("SELECT "+dbHelper.IMGID+", id FROM "+dbHelper.TABLE_NAME_USER, new String[] {});
                 ArrayList<Integer> personimgid = new ArrayList<>();
+                ArrayList<Integer> usersid = new ArrayList<>();
                 if (c.moveToFirst()) {
                     do{
                         personimgid.add(c.getInt(c.getColumnIndex("img_id")));
-                        System.out.println(c.getInt(c.getColumnIndex("img_id")));
+                        usersid.add(c.getInt(c.getColumnIndex("id")));
                     }while (c.moveToNext());
                 }
 
                 int arrcon[] = new int[personimgid.size()];
+
                 for (int i = 0; i < personimgid.size(); i++){
                     arrcon[i]=0;
                 }
 
+                Cursor c2 = DB.rawQuery("SELECT id_user FROM "+dbHelper.TABLE_NAME_CON+"WHERE id_product="+Integer.toString(cursor.getInt(cursor.getColumnIndex("id"))), new String[] {});
 
-                addcard(cursor.getString(cursor.getColumnIndex("name")), "+ $"+cursor.getString(cursor.getColumnIndex("price")), arrcon, personimgid);
+                ArrayList<Integer> activeusersid = new ArrayList<>();
+                if (c2.moveToFirst()) {
+                    do{
+                        activeusersid.add(c2.getInt(c2.getColumnIndex("id_user")));
+                    }while (c2.moveToNext());
+                    for(int i = 0; i < usersid.size(); i++){
+                        for(int j = 0; j < activeusersid.size(); j++){
+                            if (usersid.get(i) == activeusersid.get(j)){
+                                arrcon[i] = 1;
+                            }
+                        }
+                    }
+                }
+
+
+                addcard(cursor.getString(cursor.getColumnIndex("name")), "+ $"+cursor.getString(cursor.getColumnIndex("price")), arrcon, personimgid, usersid, cursor.getInt(cursor.getColumnIndex("id")));
                 num_product++;
                 Total_price+=Integer.parseInt(cursor.getString(cursor.getColumnIndex("price")));
                 setTotalPrice(Total_price);
@@ -317,7 +336,7 @@ public class HomeFragment extends Fragment {
     }
 
 
-    void addcard(String name, String price, int arr[], ArrayList<Integer> idimg){
+    void addcard(String name, String price, int arr[], ArrayList<Integer> idimg, final ArrayList<Integer> usersid, final int card_id){
         CardView c = new CardView(this.getContext());
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -386,12 +405,21 @@ public class HomeFragment extends Fragment {
                 150, 150);
         params5.setMargins(10,10,10,10);
         for(int i = 0; i < idimg.size(); i++){
-            ImageView i1 = new ImageView(this.getContext());
+            final ImageView i1 = new ImageView(this.getContext());
             i1.setLayoutParams(params5);
             i1.setImageResource(idimg.get(i));
             if(!(arr[i] == 1)) {
                 i1.setAlpha(100);
             }
+            final int finalI = i;
+            i1.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    setVis(i1, usersid.get(finalI), card_id);
+                }
+            });
             l3.addView(i1);
         }
 
@@ -406,6 +434,17 @@ public class HomeFragment extends Fragment {
         l1.addView(l3);
         c.addView(l1);
         l.addView(c);
+    }
+
+    void setVis(ImageView i1, int user_id, int product_id){
+        if(i1.getImageAlpha() == 100){
+            i1.setAlpha(250);
+            DB.execSQL("INSERT INTO "+dbHelper.TABLE_NAME_CON+" (id_user,id_product) VALUES ("+user_id+","+product_id+")");
+        } else {
+            i1.setAlpha(100);
+            DB.execSQL("DELETE FROM "+dbHelper.TABLE_NAME_CON+" WHERE id_user = "+user_id+" AND id_product ="+product_id);
+
+        }
     }
 
     @Override
