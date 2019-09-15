@@ -48,6 +48,7 @@ public class NotificationsFragment extends Fragment {
     private HorizontalScrollView horscroll;
     OkHttpClient client = new OkHttpClient();
 
+
 //    public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
 
@@ -57,12 +58,19 @@ public class NotificationsFragment extends Fragment {
                 ViewModelProviders.of(this).get(NotificationsViewModel.class);
         View root = inflater.inflate(R.layout.fragment_notifications, container, false);
 
+        imageViewQrCode = (ImageView) root.findViewById(R.id.qrCode);
+        try {
+            createAcc(true);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         horscroll = (HorizontalScrollView)root.findViewById(R.id.imagescrol);
 
         generateQR();
 
         reqCode();
+        mockGenerateQR();
 
 
         return root;
@@ -112,23 +120,37 @@ public class NotificationsFragment extends Fragment {
 
 
 
-    private void createAcc() throws JSONException {
+    private String createAcc(final boolean qr) throws JSONException {
 
-        HomeFragment sect = new HomeFragment();
-        String sss = sect.getKeySession();
+        final String sss = HomeFragment.getKeySession();
+
+        final String uniqueID = UUID.randomUUID().toString();
 
         String val1 = "63d8fa480ed2c101ba0d76b9c793fe62e25032fd";
         String val2 = "e81dd1224666ae0146251ca5257fd36d19df9288";
         int sum = 1500;
+        String js;
 
-
-        String js = "{\"amount\": " + Integer.toString(sum) +
-                ",  \"currencyCode\": 810,  \"description\": \"test description\",  " +
-                "\"number\": \"344fcb54-c81a-4ec6-a306-fc8dbd2d6167953cd861\", " +
-                " \"payer\": \"" +
-                val1 +
-                "\",  \"recipient\": \"" +
-                val2 + "\"}";
+        if(qr){
+             js = "{\"amount\": " + Integer.toString(sum) +
+                    ",  \"currencyCode\": 810,  \"description\": \"test description\",  " +
+                    "\"number\": \"" +
+                    uniqueID +
+                    "\", " +
+                    " \"payer\": \"" +
+                    val1 +
+                    "\",  \"recipient\": \"" +
+                    val2 + "\"}";
+        } else {
+             js = "{\"amount\":1500,  \"currencyCode\":810, " +
+                    " \"description\": \"test description\"," +
+                    "  \"number\": \"" +
+                    uniqueID +
+                    "\", " +
+                    " \"recipient\": \"" +
+                    val1 +
+                    "\"}";
+        }
 
         System.out.println(js);
 
@@ -139,11 +161,7 @@ public class NotificationsFragment extends Fragment {
 
         RequestBody body = RequestBody.create(JSON, json.toString());
 
-        try {
-            sleep(9000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
         Request request = new Request.Builder()
                 .url("http://89.208.84.235:31080/api/v1/invoice")
                 .addHeader("FPSID",sss)
@@ -163,6 +181,9 @@ public class NotificationsFragment extends Fragment {
                 try {
                     jsRes = new JSONObject(response.body().string());
                     System.out.println(jsRes);
+                    if(qr){
+                        generateQR(uniqueID);
+                    }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -184,23 +205,14 @@ public class NotificationsFragment extends Fragment {
             }
         });
 
-
+        return uniqueID;
 
 
     }
 
 
 
-
-
-    private void generateQR() {
-        String in;
-        try {
-            in = createAcc();
-        } catch (JSONException e) {
-            in = "42615e75-6cde-41dc-a2fe-24e99d92c1c3";
-            e.printStackTrace();
-        }
+    private void generateQR(String in) {
 
         String uniqueID = UUID.randomUUID().toString();
 
@@ -211,11 +223,43 @@ public class NotificationsFragment extends Fragment {
         String kik = "e81dd1224666ae0146251ca5257fd36d19df9288";
         String invoice = "42615e75-6cde-41dc-a2fe-24e99d92c1c3";
 
+
         String cntx = "{\"invoiceId\":\"" +
                 in +
-                "\",\"amount\":58," +
+                "\",\"amount\":1500," +
                 "\"address\":\"" +
                 iluha +
+                "\",\"currencyCode\":810}";
+
+        System.out.println(cntx);
+
+        try {
+            BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
+            Bitmap bitmap = barcodeEncoder.encodeBitmap(cntx, BarcodeFormat.QR_CODE, 400, 400);
+            imageViewQrCode.setImageBitmap(bitmap);
+        } catch(Exception e) {
+        }
+
+    }
+
+
+    private void mockGenerateQR() {
+
+        String uniqueID = UUID.randomUUID().toString();
+
+        String otherAcc =
+                "537c8cf34d8c59d2c1341c1dd90f3a991c69c5fb";
+
+        String iluha = "63d8fa480ed2c101ba0d76b9c793fe62e25032fd";
+        String kik = "e81dd1224666ae0146251ca5257fd36d19df9288";
+        String invoice = "42615e75-6cde-41dc-a2fe-24e99d92c1c3";
+
+
+        String cntx = "{\"invoiceId\":\"" +
+                invoice +
+                "\",\"amount\":1500," +
+                "\"address\":\"" +
+                otherAcc +
                 "\",\"currencyCode\":810}";
 
         System.out.println(cntx);
@@ -235,4 +279,11 @@ public class NotificationsFragment extends Fragment {
         }
 
     }
+
+
+
+
+
+
+
 }

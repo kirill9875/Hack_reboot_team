@@ -54,6 +54,7 @@ import java.util.ArrayList;
 
 public class HomeFragment extends Fragment {
 
+    private static String keySession;
     private HomeViewModel homeViewModel;
     LinearLayout l;
     TextView tv;
@@ -62,7 +63,6 @@ public class HomeFragment extends Fragment {
     int num_product = 0;
     int Total_price = 0;
 
-    public String keySession;
 //    OkHttpClient client = new OkHttpClient();
     private final OkHttpClient client = new OkHttpClient();
 
@@ -569,7 +569,7 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    public String getKeySession() {
+    public static String getKeySession() {
         return keySession;
     }
 }
