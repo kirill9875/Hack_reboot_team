@@ -5,7 +5,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,6 +38,7 @@ public class NotificationsFragment extends Fragment {
     private NotificationsViewModel notificationsViewModel;
 
     private ImageView imageViewQrCode;
+    private HorizontalScrollView horscroll;
     OkHttpClient client = new OkHttpClient();
 
 //    public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
@@ -47,7 +50,9 @@ public class NotificationsFragment extends Fragment {
                 ViewModelProviders.of(this).get(NotificationsViewModel.class);
         View root = inflater.inflate(R.layout.fragment_notifications, container, false);
 
-        imageViewQrCode = (ImageView) root.findViewById(R.id.qrCode);
+
+        horscroll = (HorizontalScrollView)root.findViewById(R.id.imagescrol);
+
         generateQR();
 
         reqCode();
@@ -103,7 +108,12 @@ public class NotificationsFragment extends Fragment {
             BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
             Bitmap bitmap = barcodeEncoder.encodeBitmap("{\"invoiceId\":\"42615e75-6cde-41dc-a2fe-24e99d92c1c3\",\"amount\":58," +
                     "\"address\":\"537c8cf34d8c59d2c1341c1dd90f3a991c69c5fb\",\"currencyCode\":810}", BarcodeFormat.QR_CODE, 400, 400);
+            ImageView imageViewQrCode = new ImageView(this.getContext());
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+            imageViewQrCode.setLayoutParams(params);
             imageViewQrCode.setImageBitmap(bitmap);
+            horscroll.addView(imageViewQrCode);
         } catch(Exception e) {
         }
 
